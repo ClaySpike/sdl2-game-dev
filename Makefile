@@ -24,10 +24,10 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 # The -MMD and -MP flags together generate Makefiles for us!
 # These files will have .d instead of .o as the output.
-CPPFLAGS := $(INC_FLAGS) -MMD -MP
+CPPFLAGS := $(INC_FLAGS) -MMD -MP $(shell sdl2-config --cflags)
 
 # -l SDL2-2.0.0 will link in the SDL2 libraries
-LDFLAGS := -l SDL2-2.0.0
+LDFLAGS := $(shell sdl2-config --libs)
 
 # Define CC to be the compiler
 CC := gcc
