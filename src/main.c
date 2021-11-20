@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include <include/global.h>
+#include <SDL2/SDL_image.h>
+#include "global.h"
+#include "image.h"
 
 int main(int argc, char *argv[]) {
 	/* Initialize SDL2 Video and Audio Systems */
@@ -8,6 +10,24 @@ int main(int argc, char *argv[]) {
 		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
 		return 1;
 	}
+
+	/* Initialize IMG system
+	 * Used for importing image assets
+	 * Initialization depends on what type of files using as assets
+	 * These flags can be OR'd together
+	 * .jpg files: IMG_INIT_JPG
+	 * .png files: IMG_INIT_PNG
+	 * .tif files: IMG_INIT_TIF
+	 * ex: IMG_INIT_JPG | IMG_INIT_PNG
+	 */
+	int img_flags = IMG_INIT_JPG|IMG_INIT_PNG;
+	int img_init = IMG_Init(img_flags);
+	if((img_init&img_flags) != img_flags) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+					"Unable to initialize IMG: %s", IMG_GetError());
+		return 1;
+	}
+
 
 	/* Create the window and renderer
 	 * The renderer is what is used to draw to the window
@@ -27,8 +47,15 @@ int main(int argc, char *argv[]) {
 			&renderer)) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
 					"Couldn't create window and renderer: %s", SDL_GetError());
-		return 2;
+		return 1;
 	}
+
+	/* Import Image as a texture
+	 * The texture will be used to draw the image to the renderer
+	 */
+	SDL_Texture *img = importToTexture(renderer, "src/assets/lizard.png");
+	SDL_Rect img_size = {0, 0, 0, 0};
+	SDL_QueryTexture(img, NULL, NULL, &img_size.w, &img_size.h);
 
 	/* main loop
 	 * responsible for obtaining input from devices
@@ -61,12 +88,22 @@ int main(int argc, char *argv[]) {
 		SDL_SetRenderDrawColor(renderer, 0x55, 0x55, 0x55, 0xFF);
 		SDL_RenderClear(renderer);
 		SDL_RenderFillRect(renderer, &SCREEN);
+
+		/* After drawing the background draw the image to the renderer
+		 * When drawing to the renderer make sure to draw in the correct order
+		 * location is used to show where the img will be copied to
+		 * in this case we are copying it to the center of the screen
+		 */
+		SDL_Rect location = {SCREEN.w/2-img_size.w/2, SCREEN.h/2-img_size.h/2, img_size.w, img_size.h};
+		SDL_RenderCopy(renderer, img, &img_size, &location);
+
 		SDL_RenderPresent(renderer);
 	}
 
 	/* Destroy/Quit all systems using from SDL */
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	IMG_Quit();
 	SDL_Quit();
 	return 0;
 }
