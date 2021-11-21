@@ -90,13 +90,16 @@ int main(int argc, char *argv[]) {
 		SDL_RenderClear(renderer);
 		SDL_RenderFillRect(renderer, &SCREEN);
 
-		/* After drawing the background draw the image to the renderer
-		 * When drawing to the renderer make sure to draw in the correct order
-		 * location is used to show where the img will be copied to
-		 * in this case we are copying it to the center of the screen
+		/* After drawing the background we want to draw from the sprite sheet
+		 * to do this I created a function called convertToSpriteSheet that converts a number
+		 * into a location on a Sprite Sheet
+		 * We then use this as the source location (the location on the sprite sheet)
+		 * as for the destination location right now we are just using the center of the screen
+		 * as well as doubling the size to make it a little easier to see
 		 */
-		SDL_Rect location = convertToSpriteSheet(39);
-		SDL_RenderCopy(renderer, img, &img_size, &location);
+		SDL_Rect src_loc = convertToSpriteSheet(10);
+		SDL_Rect dest_loc = {SCREEN.w/2-src_loc.w, SCREEN.h/2-src_loc.h, src_loc.w * 2, src_loc.h * 2};
+		SDL_RenderCopy(renderer, img, &src_loc, &dest_loc);
 
 		SDL_RenderPresent(renderer);
 	}
