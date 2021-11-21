@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include "global.h"
 #include "image.h"
+#include "tile.h"
 
 int main(int argc, char *argv[]) {
 	/* Initialize SDL2 Video and Audio Systems */
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
 	/* Import Image as a texture
 	 * The texture will be used to draw the image to the renderer
 	 */
-	SDL_Texture *img = importToTexture(renderer, "src/assets/lizard.png");
+	SDL_Texture *img = importToTexture(renderer, "src/assets/tileset.png");
 	SDL_Rect img_size = {0, 0, 0, 0};
 	SDL_QueryTexture(img, NULL, NULL, &img_size.w, &img_size.h);
 
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
 		 * location is used to show where the img will be copied to
 		 * in this case we are copying it to the center of the screen
 		 */
-		SDL_Rect location = {SCREEN.w/2-img_size.w/2, SCREEN.h/2-img_size.h/2, img_size.w, img_size.h};
+		SDL_Rect location = convertToSpriteSheet(39);
 		SDL_RenderCopy(renderer, img, &img_size, &location);
 
 		SDL_RenderPresent(renderer);
