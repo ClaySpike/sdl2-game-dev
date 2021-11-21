@@ -4,6 +4,7 @@
 #include "global.h"
 #include "image.h"
 #include "tile.h"
+#include "level.h"
 
 int main(int argc, char *argv[]) {
 	/* Initialize SDL2 Video and Audio Systems */
@@ -54,9 +55,21 @@ int main(int argc, char *argv[]) {
 	/* Import Image as a texture
 	 * The texture will be used to draw the image to the renderer
 	 */
-	SDL_Texture *img = importToTexture(renderer, "src/assets/tileset.png");
-	SDL_Rect img_size = {0, 0, 0, 0};
-	SDL_QueryTexture(img, NULL, NULL, &img_size.w, &img_size.h);
+	SDL_Texture *spriteSheet = importToTexture(renderer, "src/assets/tileset.png");
+
+	/* Import the level
+	 * this will import from a binary file
+	 * see the implementation of the functions for details
+	 */
+	struct level *lvl = createLevel(64, 64);
+	for (int i = 0; i < lvl->height; i++) {
+		for (int j = 0; j < lvl->width; j++) {
+			lvl->data[i * lvl->height + j].floor = LIGHT_SOIL;
+			lvl->data[i * lvl->height + j].solid = 0;
+			lvl->data[i * lvl->height + j].placed = EMPTY;
+			lvl->data[i * lvl->height + j].state = NULL;
+		}
+	}
 
 	/* main loop
 	 * responsible for obtaining input from devices
@@ -99,10 +112,17 @@ int main(int argc, char *argv[]) {
 		 */
 		SDL_Rect src_loc = convertToSpriteSheet(10);
 		SDL_Rect dest_loc = {SCREEN.w/2-src_loc.w, SCREEN.h/2-src_loc.h, src_loc.w * 2, src_loc.h * 2};
-		SDL_RenderCopy(renderer, img, &src_loc, &dest_loc);
+		SDL_RenderCopy(renderer, spriteSheet, &src_loc, &dest_loc);
 
 		SDL_RenderPresent(renderer);
 	}
+
+	/* Free Level */
+	saveLevelToFile(lvl, "src/assets/test.lvl");
+	freeLevel(lvl);
+
+	/* Free Textures */
+	SDL_DestroyTexture(spriteSheet);
 
 	/* Destroy/Quit all systems using from SDL */
 	SDL_DestroyRenderer(renderer);
