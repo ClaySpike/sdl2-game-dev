@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "global.h"
@@ -64,7 +65,16 @@ int main(int argc, char *argv[]) {
 	struct level *lvl = createLevel(64, 64);
 	for (int i = 0; i < lvl->height; i++) {
 		for (int j = 0; j < lvl->width; j++) {
-			lvl->data[i * lvl->height + j].floor = LIGHT_SOIL;
+			int r = rand();
+			if (r % 3 == 0) {
+				lvl->data[i * lvl->height + j].floor = LIGHT_SOIL;
+			}
+			else if (r % 3 == 1) {
+				lvl->data[i * lvl->height + j].floor = DARK_SOIL;
+			}
+			else {
+				lvl->data[i * lvl->height + j].floor = ROCKY_SOIL;
+			}
 			lvl->data[i * lvl->height + j].solid = 0;
 			lvl->data[i * lvl->height + j].placed = EMPTY;
 			lvl->data[i * lvl->height + j].state = NULL;
@@ -110,9 +120,10 @@ int main(int argc, char *argv[]) {
 		 * as for the destination location right now we are just using the center of the screen
 		 * as well as doubling the size to make it a little easier to see
 		 */
-		SDL_Rect src_loc = convertToSpriteSheet(10);
-		SDL_Rect dest_loc = {SCREEN.w/2-src_loc.w, SCREEN.h/2-src_loc.h, src_loc.w * 2, src_loc.h * 2};
-		SDL_RenderCopy(renderer, spriteSheet, &src_loc, &dest_loc);
+		//SDL_Rect src_loc = convertToSpriteSheet(10);
+		//SDL_Rect dest_loc = {SCREEN.w/2-src_loc.w, SCREEN.h/2-src_loc.h, src_loc.w * 2, src_loc.h * 2};
+		//SDL_RenderCopy(renderer, spriteSheet, &src_loc, &dest_loc);
+		renderLevel(renderer, spriteSheet, lvl, (SDL_Point){0, 0}, 1.5);
 
 		SDL_RenderPresent(renderer);
 	}

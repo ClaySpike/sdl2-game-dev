@@ -14,5 +14,6 @@ struct level *retrieveLevelFromFile(char *);
 void saveLevelToFile(struct level *, char *);
 struct level *createLevel(int, int);
 void freeLevel(struct level *);
+void renderLevel(SDL_Renderer *, SDL_Texture *, struct level *, SDL_Point, float);
 
 #endif

@@ -11,11 +11,8 @@
 #define RAIL 2
 #define LEVER 3
 #define SIGN 4
-#define ROCK_1 5
-#define ROCK_2 6
-#define ROCK_3 7
-#define ROCK_4 8
-#define LAMP 9
+#define ROCK 5
+#define LAMP 6
 
 struct tile {
     unsigned int floor;
